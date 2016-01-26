@@ -10,26 +10,46 @@
 
 namespace Magento\Developer\Model\TemplateEngine\Decorator;
 
-class DebugHints implements \Magento\Framework\View\TemplateEngineInterface
+use \Magento\Framework\View\TemplateEngineInterface;
+use \Magento\Framework\View\Element\BlockInterface;
+
+/**
+ * Class DebugHints
+ */
+class DebugHints implements TemplateEngineInterface
 {
     /**
-     * @var \Magento\Framework\View\TemplateEngineInterface
+     * @var TemplateEngineInterface
      */
-    private $_subject;
+    protected $subject;
 
     /**
-     * @var bool
+     * @var string
      */
-    private $_showBlockHints;
+    protected $fileLinkFormat;
 
     /**
-     * @param \Magento\Framework\View\TemplateEngineInterface $subject
-     * @param bool $showBlockHints Whether to include block into the debugging information or not
+     * @var string
      */
-    public function __construct(\Magento\Framework\View\TemplateEngineInterface $subject, $showBlockHints)
+    protected $fileLinkFormatCustom;
+
+    /**
+     * @var string
+     */
+    protected $displayStyle;
+
+    /**
+     * @param TemplateEngineInterface $subject
+     * @param string $fileLinkFormat
+     * @param string $fileLinkFormatCustom
+     * @param string $displayStyle
+     */
+    public function __construct(TemplateEngineInterface $subject, $fileLinkFormat, $fileLinkFormatCustom, $displayStyle)
     {
-        $this->_subject = $subject;
-        $this->_showBlockHints = $showBlockHints;
+        $this->subject = $subject;
+        $this->fileLinkFormat = $fileLinkFormat;
+        $this->fileLinkFormatCustom = $fileLinkFormatCustom;
+        $this->displayStyle = $displayStyle;
     }
 
     /**
@@ -37,13 +57,10 @@ class DebugHints implements \Magento\Framework\View\TemplateEngineInterface
      *
      * {@inheritdoc}
      */
-    public function render(\Magento\Framework\View\Element\BlockInterface $block, $templateFile, array $dictionary = [])
+    public function render(BlockInterface $block, $templateFile, array $dictionary = [])
     {
-        $result = $this->_subject->render($block, $templateFile, $dictionary);
-        if ($this->_showBlockHints) {
-            $result = $this->_renderBlockHints($result, $block);
-        }
-        $result = $this->_renderTemplateHints($result, $templateFile);
+        $result = $this->subject->render($block, $templateFile, $dictionary);
+        $result = $this->_renderTemplateHints($result, $block, $templateFile);
         return $result;
     }
 
@@ -51,32 +68,26 @@ class DebugHints implements \Magento\Framework\View\TemplateEngineInterface
      * Insert template debugging hints into the rendered block contents
      *
      * @param string $blockHtml
+     * @param BlockInterface $block
      * @param string $templateFile
      * @return string
      */
-    protected function _renderTemplateHints($blockHtml, $templateFile)
+    protected function _renderTemplateHints($blockHtml, BlockInterface $block, $templateFile)
     {
+        // TODO: Review how \Aoe_TemplateHints_Helper_BlockInfo::getBlockInfo is structuring block info
+        $blockClass = get_class($block);
+        $blockInfo = [
+            'Name' => $block->getNameInLayout(),
+            'Alias' => $block->getBlockAlias(),
+            'Template' => $templateFile,
+            'Block Class' => $blockClass,
+            'Module' => $block->getModuleName()
+        ];
         return <<<HTML
 <div class="debugging-hints" style="position: relative; border: 1px dotted red; margin: 6px 2px; padding: 18px 2px 2px 2px;">
 <div class="debugging-hint-template-file" style="position: absolute; top: 0; padding: 2px 5px; font: normal 11px Arial; background: red; left: 0; color: white; white-space: nowrap;" onmouseover="this.style.zIndex = 999;" onmouseout="this.style.zIndex = 'auto';" title="{$templateFile}">{$templateFile}</div>
 {$blockHtml}
 </div>
-HTML;
-    }
-
-    /**
-     * Insert block debugging hints into the rendered block contents
-     *
-     * @param string $blockHtml
-     * @param \Magento\Framework\View\Element\BlockInterface $block
-     * @return string
-     */
-    protected function _renderBlockHints($blockHtml, \Magento\Framework\View\Element\BlockInterface $block)
-    {
-        $blockClass = get_class($block);
-        return <<<HTML
-<div class="debugging-hint-block-class" style="position: absolute; top: 0; padding: 2px 5px; font: normal 11px Arial; background: red; right: 0; color: blue; white-space: nowrap;" onmouseover="this.style.zIndex = 999;" onmouseout="this.style.zIndex = 'auto';" title="{$blockClass}">{$blockClass}</div>
-{$blockHtml}
 HTML;
     }
 }

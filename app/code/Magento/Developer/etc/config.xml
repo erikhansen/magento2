@@ -14,6 +14,10 @@
             <front_end_development_workflow>
                 <type>server_side_compilation</type>
             </front_end_development_workflow>
+            <debug>
+                <template_hints_file_link_format>format_disable</template_hints_file_link_format>
+                <template_hints_display_style>tooltip</template_hints_display_style>
+            </debug>
         </dev>
     </default>
 </config>

@@ -145,16 +145,31 @@
             <group id="debug" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Debug</label>
                 <field id="template_hints_storefront" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Enabled Template Path Hints for Storefront</label>
+                    <label>Enable Template Path Hints for Storefront</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="template_hints_admin" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Enabled Template Path Hints for Admin</label>
+                <field id="template_hints_admin" translate="label" type="select" sortOrder="21" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Template Path Hints for Admin</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="template_hints_blocks" translate="label" type="select" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Add Block Names to Hints</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <field id="template_hints_display_style" translate="label" type="select" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Template Path Hints Display Style</label>
+                    <source_model>Magento\Developer\Model\Config\Source\TemplateHintsDisplayStyle</source_model>
+                </field>
+                <field id="template_hints_file_link_format" translate="label" type="select" sortOrder="23" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add File Links To Templates</label>
+                    <source_model>Magento\Developer\Model\Config\Source\TemplateHintsFileLinkFormat</source_model>
+                    <depends>
+                        <field id="template_hints_display_style">tooltip</field>
+                    </depends>
+                </field>
+                <field id="template_hints_file_link_format_custom" translate="label" type="text" sortOrder="24" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>File Link Format</label>
+                    <comment><![CDATA[<strong>%f</strong> will be replaced by a path to the file and <strong>%l</strong> will be replaced by the line number.]]></comment>
+                    <depends>
+                        <field id="template_hints_display_style">tooltip</field>
+                        <field id="template_hints_file_link_format">custom</field>
+                    </depends>
                 </field>
             </group>
             <group id="template" translate="label" type="text" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">

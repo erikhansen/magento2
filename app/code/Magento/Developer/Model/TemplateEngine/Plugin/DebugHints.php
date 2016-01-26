@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin for the template engine factory that makes a decision of whether to activate debugging hints or not
+ * Plugin for the template engine factory that passes in configured settings
  *
  * Copyright © 2015 Magento. All rights reserved.
  * See COPYING.txt for license details.
@@ -18,9 +18,19 @@ use Magento\Store\Model\StoreManagerInterface;
 class DebugHints
 {
     /**
-     * XPath of configuration of the debug block names
+     * XPath of configuration of the file link format
      */
-    const XML_PATH_DEBUG_TEMPLATE_HINTS_BLOCKS = 'dev/debug/template_hints_blocks';
+    const XML_PATH_DEBUG_TEMPLATE_HINTS_FILE_LINK_FORMAT = 'dev/debug/template_hints_file_link_format';
+
+    /**
+     * XPath of configuration of the custom file link format
+     */
+    const XML_PATH_DEBUG_TEMPLATE_HINTS_FILE_LINK_FORMAT_CUSTOM = 'dev/debug/template_hints_file_link_format_custom';
+
+    /**
+     * XPath of configuration of the display style
+     */
+    const XML_PATH_DEBUG_TEMPLATE_HINTS_DISPLAY_STYLE = 'dev/debug/template_hints_display_style';
 
     /**
      * @var ScopeConfigInterface
@@ -90,14 +100,26 @@ class DebugHints
         $storeCode = $this->storeManager->getStore()->getCode();
         if ($this->scopeConfig->getValue($this->debugHintsPath, ScopeInterface::SCOPE_STORE, $storeCode)
             && $this->devHelper->isDevAllowed()) {
-            $showBlockHints = $this->scopeConfig->getValue(
-                self::XML_PATH_DEBUG_TEMPLATE_HINTS_BLOCKS,
+            $fileLinkFormat = $this->scopeConfig->getValue(
+                self::XML_PATH_DEBUG_TEMPLATE_HINTS_FILE_LINK_FORMAT,
+                ScopeInterface::SCOPE_STORE,
+                $storeCode
+            );
+            $fileLinkFormatCustom = $this->scopeConfig->getValue(
+                self::XML_PATH_DEBUG_TEMPLATE_HINTS_FILE_LINK_FORMAT_CUSTOM,
+                ScopeInterface::SCOPE_STORE,
+                $storeCode
+            );
+            $displayStyle = $this->scopeConfig->getValue(
+                self::XML_PATH_DEBUG_TEMPLATE_HINTS_DISPLAY_STYLE,
                 ScopeInterface::SCOPE_STORE,
                 $storeCode
             );
             return $this->debugHintsFactory->create([
                 'subject' => $invocationResult,
-                'showBlockHints' => $showBlockHints,
+                'fileLinkFormat' => $fileLinkFormat,
+                'fileLinkFormatCustom' => $fileLinkFormatCustom,
+                'displayStyle' => $displayStyle,
             ]);
         }
         return $invocationResult;
